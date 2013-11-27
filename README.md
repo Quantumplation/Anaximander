@@ -20,7 +20,7 @@ Not all of these have to get implemented, but each one would be nice.
  - Provide a history slider
  - Tactical overlays: Econ/Industry/Tech/Fleet/Resources heatmaps, etc.  We can use http://www.patrick-wied.at/static/heatmapjs/ for this pretty easily.
  - Webhook Notifications for specific triggers.  We can tie these up using zapier to email, text, etc.
-   + Enemy star rises above a certain industry. (Long live space detroit!)
+   + Enemy star rises above a certain industry. (Long live SpaceDetroit!)
    + Enemy fleet above a certain threshold of ships enters view.
    + Enemy fleet launches with your star as a destination.
  - Calculating how many ships a fleet will have when it reaches its destination by taking into account industry.
