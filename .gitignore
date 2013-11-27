@@ -1,0 +1,11 @@
+*.suo
+*.user
+*.cachefile
+*.xnb
+*.sln.docstates
+*.cache
+*.pyc
+_Resharper.*
+
+NpMapMaker/NpMapMaker/bin
+NpMapMaker/NpMapMaker/obj
