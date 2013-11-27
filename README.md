@@ -26,3 +26,6 @@ Not all of these have to get implemented, but each one would be nice.
  - Calculating how many ships a fleet will have when it reaches its destination by taking into account industry.
  - Strategic planning capabilities
    - Multi-stop combat planning, showing rough estimates of survivors at each step, taking into account industry
+ - Alliance detection
+   - Player A's ships land on Player B's star, but star count goes up.
+   - Statistical probability that people are allies: W gets tech from X within Y hours of researching it Z percent of the time.
