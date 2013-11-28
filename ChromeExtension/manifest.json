@@ -1,0 +1,12 @@
+{
+    "name": "Anaximander",
+    "version": "1.0",
+    "manifest_version": 2,
+    "content_scripts": [{
+        "js": ["extension.js"],
+        "matches": ["http://triton.ironhelmet.com/game/5228441494355968"]
+    }],
+    "web_accessible_resources": [
+        "inject.js"
+    ]
+}
