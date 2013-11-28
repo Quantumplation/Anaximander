@@ -5,8 +5,13 @@
             if (data.event == "order:full_universe") {
                 // this is the data we're looking for
                 // NOTE: the remote endpoint NEEDS to set the 'Access-Control-Allow-Origin' to accept http://triton.ironhelmet.com
-                jQuery.post("http://quantumplation.me/anaximander", data.report); // TODO: finalize endpoint
-                console.log("Data sent to the Anaximander server:", data.report);
+		$.ajax({
+		  url:"http://quantumplation.me:4000/Anaximander",
+		  type:"POST",
+		  data:"payload=" + escape(xhr.responseText),
+		  contentType:"application/x-www-form-urlencoded",
+		});
+                console.log("Data sent to the Anaximander server:", "payload=" + escape(xhr.responseText));
             }
         }
     });
