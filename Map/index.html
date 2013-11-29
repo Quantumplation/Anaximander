@@ -9,11 +9,15 @@
         <script src="map.js"></script>
         <style>
             html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111 }
-            #reload { position: absolute; left: 16px; top: 16px; color: white; font-family: monospace }
+            #controls { position: absolute; left: 16px; top: 16px; }
+            #reload { color: white; font-family: monospace }
         </style>
     </head>
     <body>
         <div id="container"></div>
-        <a href="#" id="reload">Reload Map</a>
+        <div id="controls">
+            <select id="tick-select"><label>Tick:</label></select>
+            <a href="#" id="reload">Reload Map</a>
+        </div>
     </body>
 </html>
