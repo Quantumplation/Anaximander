@@ -29,3 +29,4 @@ Not all of these have to get implemented, but each one would be nice.
  - Alliance detection
    - Player A's ships land on Player B's star, but star count goes up.
    - Statistical probability that people are allies: W gets tech from X within Y hours of researching it Z percent of the time.
+ - Overlapping research warning / planner/optimiztion.
