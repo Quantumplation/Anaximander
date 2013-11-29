@@ -6,7 +6,8 @@
                  [compojure "1.1.5"]
                  [ring/ring-json "0.1.2"]
                  [org.clojure/data.json "0.2.3"]
-		 [ring-cors "0.1.0"]]
+		 [ring-cors "0.1.0"]
+                 [me.raynes/conch "0.5.0"]]
   :plugins [[lein-ring "0.7.3"]]
   :ring {:handler Anaximander.core/app}
   :profiles {:dev {:dependencies [[ring-mock "0.1.3"]]}}
