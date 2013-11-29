@@ -9,3 +9,4 @@ _Resharper.*
 
 NpMapMaker/NpMapMaker/bin
 NpMapMaker/NpMapMaker/obj
+*.komodoproject
