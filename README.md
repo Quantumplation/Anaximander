@@ -15,8 +15,8 @@ Ideas
 
 Not all of these have to get implemented, but each one would be nice.
 
- - Chrome extension which, every hour on the hourly tick, gets the NP JSON dump and POST's it to Anaximander.
- - Take a json dump and update the map with it, merging reports from several players.
+ - ~~Chrome extension which, every hour on the hourly tick, gets the NP JSON dump and POST's it to Anaximander.~~ Thanks to Rob.
+ - ~~Take a json dump~~ and update the map with it, merging reports from several players.
  - Provide a history slider
  - Tactical overlays: Econ/Industry/Tech/Fleet/Resources heatmaps, etc.  We can use http://www.patrick-wied.at/static/heatmapjs/ for this pretty easily.
  - Webhook Notifications for specific triggers.  We can tie these up using zapier to email, text, etc.
