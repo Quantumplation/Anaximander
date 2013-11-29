@@ -56,8 +56,13 @@ function draw(stellarData, strategicData) {
     offset = {"x": document.documentElement.clientWidth / 2, "y": document.documentElement.clientHeight / 2};
     $("svg > g").empty();
 
+    drawSensorRange(stellarData, strategicData);
     drawStars(stellarData, strategicData);
     drawFleets(stellarData, strategicData);
+}
+
+function drawSensorRange(stellarData, strategicData) {
+    
 }
 
 function drawStars(stellarData, strategicData) {
@@ -69,14 +74,23 @@ function drawStars(stellarData, strategicData) {
             color = star.v == "0" ? "black" : "white";
         else                                                                        //If the star *is* owned, draw it with alliance colors
         {
-            var playerAlliance = strategicData.playerAllianceMembership[star.puid];
-            if (playerAlliance != undefined)
+            var player = stellarData.report.players[star.puid];
+            
+            if (player.ai == 1 || player.conceded == 1) //Conceded check might be pointless, all conceded players are AIs?
             {
-                alliance = strategicData.alliances[playerAlliance];
-                color = alliance.color;
+                color = "hotpink";
             }
             else
-                color = "gray";
+            {        
+                var playerAlliance = strategicData.playerAllianceMembership[star.puid];
+                if (playerAlliance != undefined)
+                {
+                    alliance = strategicData.alliances[playerAlliance];
+                    color = alliance.color;
+                }
+                else
+                    color = "gray";
+            }
         }
         
         paper.circle(star.x * 100 + offset.x, star.y * 100 + offset.y, 3).attr({"stroke": "gray", "stroke-width": "1", "fill": color});
