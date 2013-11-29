@@ -16,8 +16,8 @@ Ideas
 Not all of these have to get implemented, but each one would be nice.
 
  - ~~Chrome extension which, every hour on the hourly tick, gets the NP JSON dump and POST's it to Anaximander.~~ Thanks to Rob.
- - ~~Take a json dump~~ and update the map with it, merging reports from several players.
- - Provide a history slider
+ - ~~Take a json dump and update the map with it, merging reports from several players.~~ Thanks to Rob and Pi
+ - ~~Provide a history~~ slider Thanks to Rob and Pi
  - Tactical overlays: Econ/Industry/Tech/Fleet/Resources heatmaps, etc.  We can use http://www.patrick-wied.at/static/heatmapjs/ for this pretty easily.
  - Webhook Notifications for specific triggers.  We can tie these up using zapier to email, text, etc.
    + Enemy star rises above a certain industry. (Long live SpaceDetroit!)
@@ -32,3 +32,4 @@ Not all of these have to get implemented, but each one would be nice.
  - Overlapping research warning / planner/optimiztion.
  - Unspent money nearing tick warning
  - See allies unspent money to coordinate resource trades / lending
+ - See who has reported this tick and who hasn't
