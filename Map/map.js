@@ -1,4 +1,4 @@
-var paper, offset;
+var paper, offset, scale;
 
 function getTickList() {
     $.get("http://quantumplation.me:4000/Anaximander", function(data) {
@@ -53,16 +53,72 @@ function loadAndDraw(tick) {
 }
 
 function draw(stellarData, strategicData) {
-    offset = {"x": document.documentElement.clientWidth / 2, "y": document.documentElement.clientHeight / 2};
+    offset = {"x": document.documentElement.clientWidth / 2, "y": document.documentElement.clientHeight / 2};   
+    scale = 100;
     $("svg > g").empty();
 
-    drawSensorRange(stellarData, strategicData);
+    calculateRenderData(stellarData, strategicData);
+    
+    //drawSensorRange(stellarData, strategicData);      //This makes a total mess of the map
     drawStars(stellarData, strategicData);
     drawFleets(stellarData, strategicData);
 }
 
-function drawSensorRange(stellarData, strategicData) {
+function calculateRenderData(stellarData, strategicData) {
+    for (var pid in stellarData.report.players) {
+        var player = stellarData.report.players[pid];
+        player.renderData = {};
+    }
     
+    calculatePlayerIcons(stellarData, strategicData);
+    calculatePlayerSensorRange(stellarData, strategicData);
+}
+
+//go through all players and augment the layer renderdata with player color/icon
+function calculatePlayerIcons(stellarData, strategicData) {
+    for (var pid in stellarData.report.players) {
+        var player = stellarData.report.players[pid];
+
+        if (player.ai == 1 || player.conceded == 1) { //Conceded check might be pointless, all conceded players are AIs?
+            player.renderData.color = "hotpink";
+        } else {        
+            var playerAlliance = strategicData.playerAllianceMembership[player.uid];
+            if (playerAlliance != undefined) {
+                alliance = strategicData.alliances[playerAlliance];
+                player.renderData.color = alliance.color;
+            } else {
+                player.renderData.color = "gray";
+            }
+        }
+    }
+}
+
+function calculatePlayerSensorRange(stellarData, strategicData) {
+    for (var pid in stellarData.report.players) {
+        var player = stellarData.report.players[pid];
+        var sensorTechLevel = player.tech.scanning.level;
+        var sensorRange = sensorTechLevel + 2;
+        
+        player.renderData.sensorRange = sensorRange;
+    }
+}
+
+//This is a little difficult, we really want multiple layers
+//layers can be done with raphael by using multiple different Raphael objects (http://stackoverflow.com/questions/5556421/how-to-create-multiple-layer-images-using-raphael-canvas-library)
+//so maybe that should be done sometime
+function drawSensorRange(stellarData, strategicData) {
+    for (var i in stellarData.report.stars) {
+        var star = stellarData.report.stars[i];
+        
+        if (star.puid == -1)
+            continue;
+            
+        var player = stellarData.report.players[star.puid];
+        var sensorRange = player.renderData.sensorRange / 10;
+        
+        paper.circle(star.x * scale + offset.x, star.y * scale + offset.y, sensorRange * scale)
+            .attr({"stroke": "gray", "stroke-width": "1"});
+    }
 }
 
 function drawStars(stellarData, strategicData) {
@@ -70,30 +126,13 @@ function drawStars(stellarData, strategicData) {
         var star = stellarData.report.stars[i];
         
         var color;
-        if (star.puid == -1)                                                        //If the star is not ownedthen render is as either visible or not
+        if (star.puid == -1)                                                        //If the star is not owned then render is as either visible or not
             color = star.v == "0" ? "black" : "white";
-        else                                                                        //If the star *is* owned, draw it with alliance colors
-        {
-            var player = stellarData.report.players[star.puid];
-            
-            if (player.ai == 1 || player.conceded == 1) //Conceded check might be pointless, all conceded players are AIs?
-            {
-                color = "hotpink";
-            }
-            else
-            {        
-                var playerAlliance = strategicData.playerAllianceMembership[star.puid];
-                if (playerAlliance != undefined)
-                {
-                    alliance = strategicData.alliances[playerAlliance];
-                    color = alliance.color;
-                }
-                else
-                    color = "gray";
-            }
-        }
+        else                                                                        //If the star *is* owned, draw it with player colors (and icon, when that's done)
+            color = stellarData.report.players[star.puid].renderData.color;
         
-        paper.circle(star.x * 100 + offset.x, star.y * 100 + offset.y, 3).attr({"stroke": "gray", "stroke-width": "1", "fill": color});
+        paper.circle(star.x * scale + offset.x, star.y * scale + offset.y, 0.03 * scale)
+            .attr({"stroke": "gray", "stroke-width": "1", "fill": color});
     }
 }
 
@@ -102,6 +141,9 @@ function drawFleets(stellarData, strategicData) {
 
 $(function() {
     paper = Raphael("container");
+    
+    //This ZPD thing is really ugly.
+    //It's flagging deprecated event usage, using paper.clear breaks it, and it has no way to programatically set the zoom as far as I can see
     new RaphaelZPD(paper, { zoom: true, pan: true, drag: false });
     
     // fuck you raphael
