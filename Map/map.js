@@ -7,7 +7,7 @@ var layers = {
 }
 
 function position(x, y) {
-    return { x: star.x * scale + offset.x, y: star.y * scale + offset.y };
+    return { x: x * scale + offset.x, y: y * scale + offset.y };
 }
 
 function getTickList() {
@@ -186,6 +186,16 @@ function drawStars(stellarData, strategicData) {
 }
 
 function drawFleets(stellarData, strategicData) {
+    for (var fid in stellarData.report.fleets) {
+        var fleet = stellarData.report.fleets[fid];
+        
+        var positions = [ position(fleet.x, fleet.y) ];
+        for (var oid = 0; oid < fleet.o.length; oid++) {
+            var order = fleet.o[oid];
+            var star = stellarData.report.stars[order[1]];
+            positions.push(position(star.x, star.y));
+        }
+    }
 }
 
 function drawLegend(stellarData, strategicData) {
