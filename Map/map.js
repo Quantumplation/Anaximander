@@ -1,6 +1,11 @@
 var paper, offset, scale;
 var dumps = {};
 
+var layers = {
+    scanning: { enabled: true, func: drawSensorRange },
+    stars: {enabled: true, func: drawStars }
+}
+
 function getTickList() {
     $.get("http://quantumplation.me:4000/Anaximander", function(data) {
         var select = $("#tick-select");
@@ -34,7 +39,8 @@ function loadAndDraw(tick) {
     // Cache the tick data so we can remove redundant requests.
     if(tick in dumps)
     {
-        stellarData = dumps[tick];
+        stellarData = dumps[tick].stellarData;
+        strategicData = dumps[tick].strategicData;
         draw(stellarData, strategicData);
     }
 
@@ -42,10 +48,12 @@ function loadAndDraw(tick) {
     $.getJSON("http://quantumplation.me:4000/Anaximander/data/" + tick, function(data)
     {
         stellarData = data;
-        dumps[tick] = data;
+        dumps[tick] = {};
+        dumps[tick].stellarData = data;
         
         $.getJSON("http://quantumplation.me:4000/Anaximander/strategic", function(data)
         {
+            dumps[tick].strategicData = data;
             strategicData = data;            
             draw(stellarData, strategicData);
         })
@@ -58,9 +66,19 @@ function draw(stellarData, strategicData) {
     $("svg > g").empty();
 
     calculateRenderData(stellarData, strategicData);
-    
-    drawSensorRange(stellarData, strategicData);      //This makes a total mess of the map
-    drawStars(stellarData, strategicData);
+
+    $("#layers").empty();
+    $("#layers").append("<label>Layers:</label><br/>")
+    for(l in layers) {
+        $("#layers").append("<a href=\"#\" class=\"link\" id=\"" + l + "\">" + l + "</a><br/>");
+        $("#" + l).click(function(){
+            layers[this.id].enabled = !layers[this.id].enabled;
+            loadAndDraw($("#tick-select").val());
+        });
+        var layer = layers[l];
+        if(layer.enabled)
+            layer.func(stellarData, strategicData);
+    }    
     drawFleets(stellarData, strategicData);
     drawLegend(stellarData, strategicData);
 }
@@ -198,11 +216,13 @@ $(function() {
     new RaphaelZPD(paper, { zoom: true, pan: true, drag: false });
     
     // fuck you raphael
-    var svg = document.querySelector("svg");
-    svg.removeAttribute("width");
-    svg.removeAttribute("height");
-    svg.style.width = "100vw";
-    svg.style.height = "100vh";
+    var svgs = document.querySelectorAll("svg");
+    $.each(svgs, function(s, svg){
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.style.width = "100vw";
+        svg.style.height = "100vh";
+    });
     
     getTickList();
     $("#reload").click(getTickList);
