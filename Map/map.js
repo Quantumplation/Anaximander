@@ -52,6 +52,10 @@ function loadAndDraw(tick) {
     });
 }
 
+function position(x, y) {
+    return [x * scale + offset.x, y * scale + offset.y];
+}
+
 function draw(stellarData, strategicData) {
     offset = {"x": document.documentElement.clientWidth / 2, "y": document.documentElement.clientHeight / 2};   
     scale = 100;
@@ -67,7 +71,9 @@ function draw(stellarData, strategicData) {
 function calculateRenderData(stellarData, strategicData) {
     for (var pid in stellarData.report.players) {
         var player = stellarData.report.players[pid];
-        player.renderData = {};
+        player.renderData = {
+            alliance: strategicData.alliances[strategicData.playerAllianceMembership[player.uid]]
+        };
     }
     
     calculatePlayerIcons(stellarData, strategicData);
@@ -82,10 +88,8 @@ function calculatePlayerIcons(stellarData, strategicData) {
         if (player.ai == 1 || player.conceded == 1) { //Conceded check might be pointless, all conceded players are AIs?
             player.renderData.color = "hotpink";
         } else {        
-            var playerAlliance = strategicData.playerAllianceMembership[player.uid];
-            if (playerAlliance != undefined) {
-                alliance = strategicData.alliances[playerAlliance];
-                player.renderData.color = alliance.color;
+            if (player.renderData.alliance != undefined) {
+                player.renderData.color = player.renderData.alliance.color;
             } else {
                 player.renderData.color = "gray";
             }
@@ -115,8 +119,9 @@ function drawSensorRange(stellarData, strategicData) {
             
         var player = stellarData.report.players[star.puid];
         var sensorRange = player.renderData.sensorRange / 10;
+        var pos = position(star.x, star.y);
         
-        paper.circle(star.x * scale + offset.x, star.y * scale + offset.y, sensorRange * scale)
+        paper.circle(pos[0], pos[1], sensorRange * scale)
             .attr({"stroke": "gray", "stroke-width": "1"});
     }
 }
@@ -131,12 +136,43 @@ function drawStars(stellarData, strategicData) {
         else                                                                        //If the star *is* owned, draw it with player colors (and icon, when that's done)
             color = stellarData.report.players[star.puid].renderData.color;
         
-        paper.circle(star.x * scale + offset.x, star.y * scale + offset.y, 0.03 * scale)
+        var pos = position(star.x, star.y);
+        paper.circle(pos[0], pos[1], 0.03 * scale)
             .attr({"stroke": "gray", "stroke-width": "1", "fill": color});
     }
 }
 
 function drawFleets(stellarData, strategicData) {
+    for (var i in stellarData.report.fleets) {
+        var fleet = stellarData.report.fleets[i];
+        
+        //Orders is an array of arrays, a bit like this:
+        //"o": [ [0,804,7,1],[0,865,7,1],[0,675,7,1]]
+        //It looks like the elements are:
+        // - No idea! This is zero for every fleet I've ever seen
+        // - Star id
+        // - *Possibly* an enum value for the action to carry out on this star
+        // - Assuming the above is correct, probably a value for the enum (i.e. my example fleet above is set to garrison 1)
+        var orders = fleet.o;
+        
+        if (orders.length == 0)
+            continue;
+            
+        var positions = [];
+        positions.push(position(fleet.x, fleet.y));
+        for (var o in orders) {
+            var order = orders[o];
+            var star = stellarData.report.stars[order[1]];
+            positions.push(position(star.x, star.y));
+        }
+        
+        var path = "M" + positions[0][0] + " " + positions[0][1];
+        for (var o = 1; o < positions.length; o++) {
+            var dx = positions[o - 1][0] - positions[o][0];
+            var dy = positions[o - 1][1] - positions[o][1];
+            path += "L" + dx + " " + dy;
+        }
+    }
 }
 
 $(function() {
