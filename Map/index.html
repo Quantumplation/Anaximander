@@ -11,10 +11,15 @@
             html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111 }
             #controls { position: absolute; left: 16px; top: 16px; }
             #reload { color: white; font-family: monospace }
+            #players { color:white; font-family: monospace; position: absolute; left: 16px; top: 45px; }
+
         </style>
     </head>
     <body>
         <div id="container"></div>
+        <div id="players">
+	        <label>Reported Players:<br/></label>
+        </div>
         <div id="controls">
             <select id="tick-select"><label>Tick:</label></select>
             <a href="#" id="reload">Reload Map</a>

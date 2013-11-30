@@ -1,4 +1,5 @@
 var paper, offset, scale;
+var dumps = {};
 
 function getTickList() {
     $.get("http://quantumplation.me:4000/Anaximander", function(data) {
@@ -41,10 +42,19 @@ function loadAndDraw(tick) {
             62: 0, //Gingervitis
         }
     }
+
+    // Cache the tick data so we can remove redundant requests.
+    if(tick in dumps)
+    {
+        stellarData = dumps[tick];
+        draw(stellarData, strategicData);
+    }
+
     
     $.getJSON("http://quantumplation.me:4000/Anaximander/" + tick, function(data)
     {
         stellarData = data;
+        dumps[tick] = data;
         
         //Get strategic data from server here
         
@@ -62,6 +72,7 @@ function draw(stellarData, strategicData) {
     //drawSensorRange(stellarData, strategicData);      //This makes a total mess of the map
     drawStars(stellarData, strategicData);
     drawFleets(stellarData, strategicData);
+    drawLegend(stellarData, strategicData);
 }
 
 function calculateRenderData(stellarData, strategicData) {
@@ -137,6 +148,30 @@ function drawStars(stellarData, strategicData) {
 }
 
 function drawFleets(stellarData, strategicData) {
+}
+
+function drawLegend(stellarData, strategicData) {
+    $("#players").empty().append("Reported players: <br/>");
+    var techs = {
+        "scanning": "Scanning",
+        "propulsion": "Hyperspace Range",
+        "terraforming": "Terraforming",
+        "research": "Experimentation",
+        "weapons": "Weapons",
+        "banking": "Banking",
+        "manufacturing": "Manufacturing"
+    };
+    for(var i in stellarData.report.players) {
+        var player = stellarData.report.players[i];
+
+        if(player.reported) {
+            var tech = player.tech[player.researching];
+            var n = Number(tech.level) * Number(tech.brr);
+            var s = n - Number(tech.research);
+            var ticks = Math.ceil(s / player.total_science);
+            $("#players").append(player.alias + ": " + techs[player.researching] + " (" + ticks + " ticks remaining)<br/>");
+        }
+    }
 }
 
 $(function() {
