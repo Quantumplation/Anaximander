@@ -24,6 +24,7 @@ Not all of these have to get implemented, but each one would be nice.
    + Enemy fleet above a certain threshold of ships enters view.
    + Enemy fleet launches with your star as a destination.
  - Calculating how many ships a fleet will have when it reaches its destination by taking into account industry.
+ - ~~Shared fleets~~ Thanks martin
  - Strategic planning capabilities
    - Multi-stop combat planning, showing rough estimates of survivors at each step, taking into account industry
  - Alliance detection
@@ -32,4 +33,4 @@ Not all of these have to get implemented, but each one would be nice.
  - Overlapping research warning / planner/optimiztion.
  - Unspent money nearing tick warning
  - See allies unspent money to coordinate resource trades / lending
- - See who has reported this tick and who hasn't
+ - ~~See who has reported this tick and who hasn't~~ Thanks Pi
