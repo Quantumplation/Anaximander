@@ -3,7 +3,8 @@ var dumps = {};
 
 var layers = {
     scanning: { enabled: true, func: drawSensorRange },
-    stars: {enabled: true, func: drawStars }
+    stars: {enabled: true, func: drawStars },
+    econHeatmap: {enabled: true, func: drawEconHeatmap }
 }
 
 function getTickList() {
@@ -66,6 +67,7 @@ function draw(stellarData, strategicData) {
     $("svg > g").empty();
 
     calculateRenderData(stellarData, strategicData);
+    calculateEconHeatmap(stellarData, strategicData);
 
     $("#layers").empty();
     $("#layers").append("<label>Layers:</label><br/>")
@@ -78,7 +80,7 @@ function draw(stellarData, strategicData) {
         var layer = layers[l];
         if(layer.enabled)
             layer.func(stellarData, strategicData);
-    }    
+    }
     drawFleets(stellarData, strategicData);
     drawLegend(stellarData, strategicData);
 }
@@ -120,6 +122,21 @@ function calculatePlayerSensorRange(stellarData, strategicData) {
         
         player.renderData.sensorRange = sensorRange;
     }
+}
+
+function calculateEconHeatmap(stellarData, strategicData) {
+    var econData = {
+        max: 0,
+        data: []
+    }
+    for(var i in stellarData.report.stars){
+        var star = stellarData.report.stars[i];
+        if(econData.max < star.e)
+            econData.max = star.e;
+        if(star.e > 0)
+            econData.data.push({x: star.x * scale + offset.x, y: star.y * scale + offset.y, count: star.e});
+    }
+    strategicData.econData = econData;
 }
 
 //This is a little difficult, we really want multiple layers
@@ -204,6 +221,24 @@ function drawLegend(stellarData, strategicData) {
             var ticks = Math.ceil(s / player.total_science);
             $("#players").append(player.alias + ": " + techs[player.researching] + " (" + ticks + " ticks remaining)<br/>");
         }
+    }
+}
+
+var heatmapMade = false;
+function drawEconHeatmap(stellarData, strategicData) {
+    if(!heatmapMade){
+        // heatmap configuration
+        var config = {
+            element: document.getElementById("econHeatmap"),
+            radius: 30,
+            opacity: 50
+        };
+        
+        //creates and initializes the heatmap
+        var heatmap = h337.create(config);
+     
+        heatmap.store.setDataSet(strategicData.econData);
+        heatmapMade = true;
     }
 }
 

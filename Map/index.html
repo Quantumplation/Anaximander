@@ -6,16 +6,19 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
         <script src="raphael-min.js"></script>
         <script src="raphael-zpd.js"></script>
+		<script type="text/javascript" src="heatmap/heatmap.js"></script>
         <script src="map.js"></script>
         <style>
             html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111 }
             #controls { position: absolute; left: 16px; top: 16px; }
+            #econHeatmap { position: absolute; left: 0px; top: 0px; width:100%; height:100%; }
             .link { color: white; font-family: monospace }
             #players { color:white; font-family: monospace; position: absolute; left: 16px; top: 45px; }
             #layers { color:white; font-family: monospace; position: absolute; left: 500px; top: 16px; }
         </style>
     </head>
     <body>
+        <div id="econHeatmap"></div>
         <div id="container"></div>
         <div id="players">
 	        <label>Reported Players:<br/></label>
