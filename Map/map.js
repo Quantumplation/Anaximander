@@ -3,7 +3,8 @@ var dumps = {};
 
 var layers = {
     scanning: { enabled: true, func: drawSensorRange },
-    stars: {enabled: true, func: drawStars }
+    stars: {enabled: true, func: drawStars },
+    fleets: {enabled: true, func: drawFleets }
 }
 
 function position(x, y) {
@@ -83,8 +84,7 @@ function draw(stellarData, strategicData) {
         var layer = layers[l];
         if(layer.enabled)
             layer.func(stellarData, strategicData);
-    }    
-    drawFleets(stellarData, strategicData);
+    }
     drawLegend(stellarData, strategicData);
 }
 
@@ -136,8 +136,7 @@ function drawSensorRange(stellarData, strategicData) {
     }
 }
 
-function sensorPass(alliance, color, stellarData, strategicData)
-{
+function sensorPass(alliance, color, stellarData, strategicData) {
     for (var i in stellarData.report.stars) {
         var star = stellarData.report.stars[i];
         
@@ -189,12 +188,34 @@ function drawFleets(stellarData, strategicData) {
     for (var fid in stellarData.report.fleets) {
         var fleet = stellarData.report.fleets[fid];
         
+        if (fleet.o.length == 0) continue;
+        
         var positions = [ position(fleet.x, fleet.y) ];
         for (var oid = 0; oid < fleet.o.length; oid++) {
             var order = fleet.o[oid];
+            //order is an array:
+            //[0] = ?? No idea! I've only ever seen this as zero. I *guess* looping?
+            //[1] = Star ID
+            //[2] = ?? I *guess* action type on star (e.g. garrison)
+            //[3] = ?? I *guess* parameter to action (e.g. garrison 1)
+            
             var star = stellarData.report.stars[order[1]];
             positions.push(position(star.x, star.y));
         }
+        
+        var line = "M" + positions[0].x + " " + positions[0].y;
+        for (var i = 1; i < positions.length; i++) {
+            line += "L" + positions[i].x + " " + positions[i].y;
+        }
+        
+        var color = "pink"; //Get player color?
+        
+        paper.path(line)
+            .attr({"stroke": "pink", "stroke-width":1});
+            
+        paper.circle(positions[0].x, positions[0].y, scale * 0.02)
+            .attr({"fill": color})
+            .attr({"stroke": "gray", "stroke-width":1});
     }
 }
 
