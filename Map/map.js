@@ -3,12 +3,17 @@ var dumps = {};
 
 var layers = {
     scanning: { enabled: true, func: drawSensorRange },
+    hyperspace: {enabled: true, func: drawHyperspace },
     stars: {enabled: true, func: drawStars },
     fleets: {enabled: true, func: drawFleets }
 }
 
 function position(x, y) {
     return { x: x * scale + offset.x, y: y * scale + offset.y };
+}
+
+function length(lightyears) {
+    return lightyears * 0.125;
 }
 
 function getTickList() {
@@ -61,7 +66,7 @@ function loadAndDraw(tick) {
                 dumps[tick].strategicData = data;
                 strategicData = data;            
                 draw(stellarData, strategicData);
-            })
+            }).fail(function(a, b) { console.log(b); });
         });
     }
 }
@@ -96,6 +101,7 @@ function calculateRenderData(stellarData, strategicData) {
     
     calculatePlayerIcons(stellarData, strategicData);
     calculatePlayerSensorRange(stellarData, strategicData);
+    calculatePlayerHyperspaceRange(stellarData, strategicData);
 }
 
 //go through all players and augment the layer renderdata with player color/icon
@@ -127,16 +133,28 @@ function calculatePlayerSensorRange(stellarData, strategicData) {
     }
 }
 
-function drawSensorRange(stellarData, strategicData) {
-    // First pass for anyone who's not in our alliance
-    for(a in strategicData.alliances)
-    {
-        var alliance = strategicData.alliances[a];
-        sensorPass(a, alliance.color, stellarData, strategicData);
+function calculatePlayerHyperspaceRange(stellarData, strategicData) {
+    for (var pid in stellarData.report.players) {
+        var player = stellarData.report.players[pid];
+        var hyperspaceTechLevel = player.tech.propulsion.level;
+        var hyperspaceRange = hyperspaceTechLevel + 3;
+        
+        player.renderData.hyperspaceRange = hyperspaceRange;
     }
 }
 
-function sensorPass(alliance, color, stellarData, strategicData) {
+function drawSensorRange(stellarData, strategicData) {
+    // First pass for anyone who's not in our alliance
+    for(var a in strategicData.alliances)
+    {
+        var alliance = strategicData.alliances[a];
+        allianceRadiusDataPass(a, alliance.color, stellarData, strategicData, function(player) {
+             return length(player.renderData.sensorRange) * scale;
+        });
+    }
+}
+
+function allianceRadiusDataPass(alliance, color, stellarData, strategicData, radiusFunc) {
     for (var i in stellarData.report.stars) {
         var star = stellarData.report.stars[i];
         
@@ -144,10 +162,10 @@ function sensorPass(alliance, color, stellarData, strategicData) {
             continue;
             
         var player = stellarData.report.players[star.puid];
-        var sensorRange = player.renderData.sensorRange / 10;
+        var radius = radiusFunc(player);
         
         var p = position(star.x, star.y);
-        paper.circle(p.x, p.y, sensorRange * scale)
+        paper.circle(p.x, p.y, radius)
             .attr({"stroke": color, "stroke-width":1});
     }
 
@@ -159,10 +177,10 @@ function sensorPass(alliance, color, stellarData, strategicData) {
             continue;
             
         var player = stellarData.report.players[star.puid];
-        var sensorRange = player.renderData.sensorRange / 10;
+        var radius = radiusFunc(player);
 
         var p = position(star.x, star.y);
-        paper.circle(p.x, p.y, sensorRange * scale - 0.5)
+        paper.circle(p.x, p.y, radius - 0.5)
             .attr({"fill": "black"});
 
     }
@@ -221,6 +239,16 @@ function drawFleets(stellarData, strategicData) {
         paper.circle(positions[0].x, positions[0].y, scale * 0.02)
             .attr({"fill": color})
             .attr({"stroke": "gray", "stroke-width":1});
+    }
+}
+
+function drawHyperspace(stellarData, strategicData) {
+    for(var a in strategicData.alliances)
+    {
+        var alliance = strategicData.alliances[a];
+        allianceRadiusDataPass(a, alliance.color, stellarData, strategicData, function(player) {
+             return length(player.renderData.hyperspaceRange) * scale;
+        });
     }
 }
 
