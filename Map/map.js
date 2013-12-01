@@ -190,6 +190,7 @@ function drawFleets(stellarData, strategicData) {
         
         if (fleet.o.length == 0) continue;
         
+        var attackRun = false;
         var positions = [ position(fleet.x, fleet.y) ];
         for (var oid = 0; oid < fleet.o.length; oid++) {
             var order = fleet.o[oid];
@@ -201,6 +202,10 @@ function drawFleets(stellarData, strategicData) {
             
             var star = stellarData.report.stars[order[1]];
             positions.push(position(star.x, star.y));
+            
+            if (star.puid != fleet.puid && star.puid != -1) {
+                attackRun = true;
+            }
         }
         
         var line = "M" + positions[0].x + " " + positions[0].y;
@@ -208,10 +213,10 @@ function drawFleets(stellarData, strategicData) {
             line += "L" + positions[i].x + " " + positions[i].y;
         }
         
-        var color = "pink"; //Get player color?
+        var color = attackRun ? "crimson" : "white";
         
         paper.path(line)
-            .attr({"stroke": "pink", "stroke-width":1});
+            .attr({"stroke": color, "stroke-width":1});
             
         paper.circle(positions[0].x, positions[0].y, scale * 0.02)
             .attr({"fill": color})
