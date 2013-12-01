@@ -23,6 +23,10 @@ function getTickList() {
         select.empty();
         
         var ticks = data.split("\n");
+        ticks = $.grep(ticks, function(a) { return a != ""; });
+        ticks = $.map(ticks, function(a) { return Number(a); });
+        ticks = ticks.sort(function sortNumber(a,b) { return a - b; });
+       
         for (var i in ticks) {
             if (ticks[i])
                 select.append("<option value='" + ticks[i] + "'>" + ticks[i] + "</option>");
