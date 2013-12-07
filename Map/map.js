@@ -5,7 +5,8 @@ var layers = {
     scanning: { enabled: true, func: drawSensorRange },
     hyperspace: {enabled: true, func: drawHyperspace },
     stars: {enabled: true, func: drawStars },
-    fleets: {enabled: true, func: drawFleets }
+    fleets: {enabled: true, func: drawFleets },
+	labels: {enabled: false, func: drawLabels }
 }
 
 function position(x, y) {
@@ -253,6 +254,21 @@ function drawHyperspace(stellarData, strategicData) {
         allianceRadiusDataPass(a, alliance.color, stellarData, strategicData, function(player) {
              return length(player.renderData.hyperspaceRange) * scale;
         });
+    }
+}
+
+function drawLabels(stellarData, strategicData) {
+    for (var i in stellarData.report.stars) {
+        var star = stellarData.report.stars[i];
+        
+        var color;
+        if (star.puid == -1)                                                        //If the star is not owned then render is as either visible or not
+            color = star.v == "0" ? "black" : "white";
+        else                                                                        //If the star *is* owned, draw it with player colors (and icon, when that's done)
+            color = stellarData.report.players[star.puid].renderData.color;
+        
+        var p = position(star.x, star.y);
+        paper.text(p.x, p.y, "\n" + star.n).attr({"font-family": "monospace", "font-size": 10, "fill": color, "text-anchor": "middle"});
     }
 }
 
