@@ -268,7 +268,8 @@ function drawLabels(stellarData, strategicData) {
             color = stellarData.report.players[star.puid].renderData.color;
         
         var p = position(star.x, star.y);
-        paper.text(p.x, p.y, "\n" + star.n).attr({"font-family": "monospace", "font-size": 10, "fill": color, "text-anchor": "middle"});
+		var label = star.st ? "\n" + star.n + '(' + star.st + ')' : "\n" + star.n;
+        paper.text(p.x, p.y, label).attr({"font-family": "monospace", "font-size": 10, "fill": color, "text-anchor": "middle"});
     }
 }
 
