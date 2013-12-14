@@ -34,3 +34,9 @@ Not all of these have to get implemented, but each one would be nice.
  - Unspent money nearing tick warning
  - See allies unspent money to coordinate resource trades / lending
  - ~~See who has reported this tick and who hasn't~~ Thanks Pi
+
+
+NOTE: To update strategic metadata:
+PUT
+Content-Type: application/x-www-form-urlencoded
+Body: "payload=" + escape(jsonString)
